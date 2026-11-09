@@ -1,0 +1,88 @@
+{
+  "format": "PlanerLabels/1",
+  "paperMm": {
+    "width": 80,
+    "height": 60
+  },
+  "fields": [
+    [
+      "PartName",
+      "Nazwa elementu"
+    ],
+    [
+      "PartLength",
+      "Długość nominalna, bez zamiany po obrocie"
+    ],
+    [
+      "PartWidth",
+      "Szerokość nominalna"
+    ],
+    [
+      "Code",
+      "Oryginalny kod elementu"
+    ],
+    [
+      "Code2",
+      "Drugi kod, jeżeli podano"
+    ],
+    [
+      "Material",
+      "Materiał"
+    ],
+    [
+      "Thickness",
+      "Grubość"
+    ],
+    [
+      "Project",
+      "Nazwa projektu"
+    ],
+    [
+      "OrderName",
+      "Nazwa zamówienia (domyślnie nazwa projektu)"
+    ],
+    [
+      "ShortDimension",
+      "Krótszy wymiar"
+    ],
+    [
+      "LongDimension",
+      "Dłuższy wymiar"
+    ],
+    [
+      "EdgeD1",
+      "Okleina D1"
+    ],
+    [
+      "EdgeD2",
+      "Okleina D2"
+    ],
+    [
+      "EdgeS1",
+      "Okleina S1"
+    ],
+    [
+      "EdgeS2",
+      "Okleina S2"
+    ],
+    [
+      "SheetName",
+      "Nazwa bieżącej płyty"
+    ],
+    [
+      "SheetIndex",
+      "Numer płyty"
+    ],
+    [
+      "Copy",
+      "Numer egzemplarza"
+    ]
+  ],
+  "aliases": {
+    "Barcode(Code)": "Code",
+    "Length(L)": "PartLength",
+    "Width(W)": "PartWidth"
+  },
+  "nativeKdtDataImportVerified": false,
+  "nativeKdtVisualRenderingVerified": false
+}

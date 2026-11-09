@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Masterwood MS320 i PreSize — analiza</title>
+  <link rel="stylesheet" href="../css/analiza.css">
+  <script defer src="../js/dane-analizy.js"></script>
+  <script defer src="../js/analiza.js"></script>
+</head>
+<body>
+<header><a class="brand" href="../index.html">PLANER / ANALIZA</a><nav><a href="#mcut">Kod MCUT</a><a href="#wideo">Filmy</a><a href="#etykiety">Etykiety</a><a href="#ustalenia">Ustalenia</a></nav></header>
+<main>
+<section class="hero">
+  <div><p class="eyebrow">MASTERWOOD MS320 · PRESIZE 3.0.1.9 · 08.11.2026</p><h1>Co udało się odczytać<br>z programu i rozkroju.</h1><p>Wyniki analizy plików użytkownika oraz źródła do odtworzenia edytora i symulacji offline.</p></div>
+  <div class="verdict"><strong>29 / 29</strong><span>powiązań cięć w dwóch przykładach potwierdza podział: gotowy element / dalsze cięcia.</span><small>To weryfikacja przykładów, nie specyfikacja wszystkich wersji formatu.</small></div>
+</section>
+<section id="mcut" class="card">
+  <div class="section-head"><div><p class="eyebrow">INTERAKTYWNY PODGLĄD</p><h2>Kod MCUT i drzewo elementów</h2><p>Wybierz węzeł z listy lub kliknij element na rysunku. Zobaczysz odpowiadający mu zapis XML.</p></div><label>Przykład<select id="exampleSelect"><option value="0">Twój plik: 1.2_Pila.mcut</option><option value="1">Plik programu: Temp/EditBoard.xml</option></select></label></div>
+  <div class="metrics" id="mcutMetrics"></div>
+  <div class="explorer"><aside id="nodeTree" aria-label="Drzewo elementów"></aside><div class="drawing"><svg id="boardDrawing" role="img" aria-label="Plan rozkroju z pliku MCUT"></svg><div id="nodeDetails" aria-live="polite"></div></div></div>
+  <div class="code-head"><h3>Oryginalny zapis przykładu</h3><button id="copySource" type="button">Kopiuj XML</button><span id="copyStatus" role="status"></span></div><div class="source" id="sourceCode" tabindex="0"></div>
+  <div class="notice"><strong>Plan i zapis to dwie reprezentacje tych samych danych.</strong> Rysunek uwzględnia zmianę osi między poziomami i początek współrzędnej Y od dołu. Wybór węzłów nie jest jeszcze odtwarzaniem rzeczywistej kolejności pracy maszyny.</div>
+</section>
+<section class="two-col">
+<article class="card"><p class="eyebrow">POTWIERDZONE W DANYCH</p><h2>Jak składa się rozkrój</h2><ol class="findings">
+  <li><strong>Połączenia po identyfikatorze.</strong> <code>part.id</code> wskazuje <code>no.N</code> z takim samym <code>id</code>. Numer w nazwie <code>no.N</code> nie jest identyfikatorem.</li>
+  <li><strong>Element lub kolejny etap.</strong> We wszystkich 29 instrukcjach dwóch przykładów <code>type=1</code> prowadzi do liścia, a <code>type=2</code> do węzła z kolejnymi cięciami.</li>
+  <li><strong>Brzegowanie lokalne.</strong> <code>trim</code> przesuwa początek cięć danego fragmentu. W Twoim przykładzie są wartości 10 mm i 15 mm; nie jest to automatycznie margines na czterech bokach każdej formatki.</li>
+  <li><strong>Rzaz między elementami.</strong> Położenie kolejnego segmentu wynika z wymiaru poprzedniego i <code>saw=4.4</code>. Dwie współrzędne różnią się od rachunku o 0,0001 mm; pozostałe zgadzają się dokładnie.</li>
+  <li><strong>Odpad 4,2 mm.</strong> Dla pierwszego podziału: <code>670 − 10 − 597 − 4,4 − 50 − 4,4 = 4,2</code>. Wynik zgadza się z załączonym zrzutem.</li>
+  <li><strong>Ostatni element wymaga osobnej reguły.</strong> W <code>EditBoard.xml</code> po ostatnim elemencie zostaje 0,1 mm przed ewentualnym końcowym rzazem. Pełne dodatkowe 4,4 mm nie mieści się w płycie. Sam XML nie rozstrzyga, czy końcowy przejazd jest pomijany, wychodzi poza materiał, czy działa tu tolerancja.</li>
+</ol></article>
+<article class="card"><p class="eyebrow">ZAPIS STANU PRACY</p><h2>Co mówi historia programu</h2><p>Plik <code>Temp/LastMachinHistory.xml</code> osobno przechowuje płytę, fragmenty pośrednie, orientację i aktualne operacje.</p><table><thead><tr><th>Pole</th><th>Co rzeczywiście widać</th></tr></thead><tbody>
+<tr><td><code>MachiningMidBoardList</code></td><td>Listę fragmentów pośrednich.</td></tr>
+<tr><td><code>waitBoard / midBoardIdWait</code></td><td>Odwołanie do oczekującego fragmentu.</td></tr>
+<tr><td><code>Rotate</code></td><td>Flagę obrotu. Kąt i moment obrotu nie są tu opisane.</td></tr>
+<tr><td><code>placePosition / X / Y</code></td><td>Zapis położenia; znaczenie jednostek wymaga potwierdzenia.</td></tr>
+<tr><td><code>InHorizontal</code></td><td>Zapis orientacji.</td></tr>
+<tr><td><code>Machined / IsCurrent</code></td><td>Stan wykonania i wskazanie aktualnej pozycji.</td></tr>
+<tr><td><code>CurrentCutPriority</code></td><td>Pole priorytetu, bez opisanej tabeli wartości.</td></tr>
+</tbody></table><p class="notice"><strong>Wniosek do symulacji:</strong> potrzebny jest stan każdego pasa: oczekuje, jest na stole, jest obrócony albo został rozcięty. Dokładnej ścieżki i tempa ruchu operatora nie da się wywnioskować z samych nazw pól. Użytkownik potwierdził przekładanie najczęściej pojedynczych pasów.</p></article>
+</section>
+<section id="wideo" class="card"><p class="eyebrow">MATERIAŁY WIDEO</p><h2>Filmy do porównania</h2><p>Linki prowadzą do stron wydawców i serwisów wideo. Nowe pozycje zweryfikowano po stronie publikacji i opisie; nie przeprowadzono analizy wszystkich klatek. Nie potwierdzają one wersji PreSize 3.0.1.9.</p><div class="video-grid">
+<a class="video" href="https://www.youtube.com/watch?v=Sv-7WcTJEqU" target="_blank" rel="noopener noreferrer"><span>01 / MASTERWOOD</span><h3>MS 320L — film wskazany przez użytkownika</h3><p>Podstawowa referencja do wyglądu programu i procesu. Model z automatycznym załadunkiem; wyposażenie może różnić się od MS320.</p><b>Otwórz film ↗</b></a>
+<a class="video" href="https://www.youtube.com/watch?v=JgdZc4V-0Dc" target="_blank" rel="noopener noreferrer"><span>02 / ITA · POLSKI MATERIAŁ</span><h3>Przemysłowa piła panelowa Masterwood 320L</h3><p>Film osadzony na stronie polskiego dostawcy ITA. Przydatny do porównania stołów, podawania i obsługi pasów.</p><b>Otwórz film ↗</b></a>
+<a class="video" href="https://rutube.ru/video/a2f50b52441e40e37e3b9c86e4b194a2/" target="_blank" rel="noopener noreferrer"><span>03 / PRESIZE · MATERIAŁ UŻYTKOWNIKA</span><h3>KDT Presize</h3><p>Według opisu: przetwarzanie pliku SAW i utworzenie etykiety w programie maszyny. Około 3 min 18 s. Nie jest oficjalną instrukcją producenta.</p><b>Otwórz film ↗</b></a>
+<a class="video" href="https://www.youtube.com/watch?v=Ka-fPSNfqUw" target="_blank" rel="noopener noreferrer"><span>04 / ITA · MODEL POKREWNY</span><h3>MasterSaw MS430 — prezentacja piły</h3><p>Materiał z tej samej strony ITA. Służy do porównania procesu, nie do przejmowania wymiarów większej maszyny.</p><b>Otwórz film ↗</b></a>
+<a class="video" href="https://kdtmac.lt/video/video-of-cnc-beam-saws" target="_blank" rel="noopener noreferrer"><span>05 / KDT · BIBLIOTEKA FILMÓW</span><h3>Pokazy pił panelowych KDT</h3><p>Zbiór demonstracji różnych modeli, m.in. KS-828C i KS-832D. Rozwiązania z dwoma popychaczami i piły kątowe trzeba odróżniać od MS320.</p><b>Otwórz bibliotekę ↗</b></a>
+</div><p class="source-note">Pozycje 02 i 04: <a href="https://ita.pl/wszystkie-maszyny/przemyslowa-pila-panelowa-seriams-saw">strona źródłowa ITA</a>. Opis pozycji 03: <a href="https://rutube.ru/video/a2f50b52441e40e37e3b9c86e4b194a2/">strona publikacji filmu</a>.</p></section>
+<section id="etykiety" class="card"><p class="eyebrow">PLIKI BINARY LABEL DESIGN</p><h2>Odczytane szablony etykiet</h2><p>Oba pliki odczytano jako strukturę rekordów i prostych wartości, bez uruchamiania bibliotek programu. Odczyt objął wszystkie 2755 i 2756 bajtów. Poniższe współrzędne pochodzą z szablonów; ich jednostka nie została potwierdzona, więc nie przeliczamy ich automatycznie na milimetry.</p><div id="labelEvidence"></div><p>Starszy szablon wiąże dane przez <code>{PartName}</code>, <code>{PartLength}</code>, <code>{PartWidth}</code>, <code>{Code}</code> i <code>{Code2}</code>. Drugi używa m.in. <code>{Length(L)}</code>, <code>{Width(W)}</code> i <code>{Barcode(Code)}</code>. To potwierdza potrzebę rozpoznawania różnych nazw pól.</p><p>Publiczne nazwy w <code>LabelDesign.dll</code> wskazują m.in. obsługę wymiarów, krawędzi, Code 128 i QR. Same nazwy nie ujawniają całej implementacji. Nasze naklejki pozostają w uzgodnionym formacie 80 × 60 mm.</p></section>
+<section class="card"><p class="eyebrow">ANALIZA PROGRAMU GŁÓWNEGO</p><h2>MachineryClientElectronicSaw.exe · 3.0.1.9</h2><p>Sprawdzono sam plik EXE, nie tylko pliki rozkroju. Ma 21 770 000 bajtów. Kopia w paczce i w folderze zainstalowanego programu jest identyczna bajt po bajcie. Wersję 3.0.1.9 potwierdzają informacje pliku Windows.</p><table><thead><tr><th>Sprawdzony element</th><th>Wynik</th></tr></thead><tbody>
+<tr><td>Struktura wykonywalna</td><td>32-bitowy PE. Sekcje <code>.AKS1</code>, <code>.AKS2</code>, <code>.AKS3</code> i <code>.rsrc</code>.</td></tr>
+<tr><td>Największy zasób RCDATA</td><td>17 370 742 bajty, wewnątrz <code>.AKS1</code>. Entropia bliska 8 bitów/bajt wskazuje dane o bardzo wysokiej losowości; sama nie rozstrzyga między szyfrowaniem i kompresją.</td></tr>
+<tr><td>Jawne zasoby Windows</td><td>Informacje wersji i manifest uprawnień/zgodności. Nie są definicjami formularzy edytora.</td></tr>
+<tr><td>Jawne metadane .NET</td><td>Brak katalogu CLR i sygnatury <code>BSJB</code> w postaci czytelnej statycznie. Nie udało się tą drogą odczytać klas głównego programu.</td></tr>
+<tr><td>Oznaczenia funkcji i formatów</td><td>Nie znaleziono jawnych ciągów <code>.mcut</code>, <code>.ptx</code>, <code>.saw</code>, <code>MachiningMiddleBoard</code> ani <code>Cutting process simulation</code> w ASCII/UTF-16LE. Nie oznacza to braku tych funkcji — zawartość jest opakowana.</td></tr>
+<tr><td>Suma kontrolna SHA-256</td><td><code>897db2155633b084967edcbc6dbe5e4e0c94f1992d6ec74d810d141b073cc8fe</code></td></tr>
+</tbody></table><p><strong>Co z tego wynika:</strong> plik główny nie zawiera dostępnego wprost zestawu formularzy ani kodu optymalizatora, który wystarczyłoby skopiować. Informacje funkcjonalne odzyskane w tym etapie pochodzą z udokumentowanych danych wejścia/wyjścia oraz bibliotek pomocniczych. <a href="./analiza/glowny-exe-analiza.json">Pełne wyniki sprawdzenia EXE ↗</a></p></section>
+<section class="card"><p class="eyebrow">GŁÓWNY EXE · DRUGI ETAP</p><h2>Rozpoznana osłona Sentinel LDK</h2><p>Układ sekcji dokładnie spełnia <a href="https://github.com/horsicq/Detect-It-Easy/blob/master/db/PE/protector_LDK.2.sg">regułę identyfikacji SafeNet Sentinel LDK w Detect It Easy</a>. Sprawdzono 308 wystąpień MZ; tylko nagłówek na początku pliku jest poprawnym obrazem PE. Sprawdzenie 10 388 kandydatów zlib i standardowych kontenerów nie dało rozpakowanego modułu. Wydobyto manifest i pełne informacje wersji, lecz nie kod symulacji.</p><p><a href="./analiza/exe-etap2/USTALENIA.txt">Czytelny raport ↗</a> · <a href="./analiza/exe-etap2/wynik.json">Pomiary i ograniczenia ↗</a>. Dokumentacja Sentinel opisuje <a href="https://docs.sentinel.thalesgroup.com/ldk/LDKdocs/Env-Win/NET/_NET_General_Tab.htm">osłonę Windows shell szyfrującą całą aplikację .NET</a>; zgodność obserwowanej struktury z tym mechanizmem jest wnioskiem, nie odzyskaniem ustawień KDT.</p></section>
+<section class="card"><p class="eyebrow">GŁÓWNY EXE · TRZECI ETAP</p><h2>Pierwsza warstwa rozwinięta w emulatorze</h2><p>Inna metoda przyniosła częściowy wynik: wykonanie samej procedury startowej w odizolowanym emulatorze CPU rozwinęło sekcję .AKS2. Widoczne stały się oznaczenia Sentinel/HASP i obsługi .NET. Program nie został uruchomiony jako proces Windows, a emulator zatrzymał się przed kodem następnej warstwy.</p><p><strong>Nie odzyskano kodu symulacji ani kolejności cięć.</strong> Nie znaleziono jawnych metadanych .NET i nazw funkcjonalnych MCUT. Nie zmieniono dużej chronionej sekcji .AKS1. Rozwinięta osłona nie jest odblokowanym programem.</p><p><a href="./analiza/exe-etap3/USTALENIA.txt">Czytelny raport trzeciej próby ↗</a> · <a href="./analiza/exe-etap3/wynik.json">Pomiary i granica zatrzymania ↗</a> · <a href="./analiza/exe-etap3/sprawdzenie-rozwinietej-warstwy.json">Sprawdzenie rozwiniętych danych ↗</a></p></section>
+<section id="ustalenia" class="two-col">
+<article class="card"><p class="eyebrow">ŹRÓDŁA PRODUCENTA I DOSTAWCÓW</p><h2>Piła i program</h2>
+<p><strong>MS320 ma potwierdzony związek z KDT.</strong> Masterwood GB opisuje maszynę jako rozwijaną we współpracy z KDT. To uzasadnia szukanie materiałów o PreSize również pod marką KDT. <a href="https://masterwoodgb.co.uk/open-house-review/">Masterwood GB ↗</a></p>
+<p><strong>Brzegowanie, fazy i etykiety są częścią integracji PreSize.</strong> Dokumentacja Promob opisuje m.in. rzaz, brzegowanie wewnętrzne, limit faz, początek układu współrzędnych i dane naklejek. Opisuje eksport PTX z Promob; nie stanowi specyfikacji naszego MCUT. <a href="https://suporte.promob.com/hc/en-us/articles/33023706141073-Cut-Pro-Cutting-Manager-WDMAX-KDT-PreSize">Promob — integracja PreSize ↗</a></p>
+<p><strong>Podstawowe oprogramowanie i zaawansowany optymalizator nie muszą być tym samym modułem.</strong> Katalog Master Saw z lutego 2020 opisuje osobny opcjonalny optymalizator, magazyn płyt i resztek oraz projektowanie etykiet. <a href="https://www.international-machines-bois.com/docs/Master%20Saw_FRA_LD_Feb_2020%20Rev%2000%281%29%281%29%281%29%282%29%281%29%281%29%283%29%281%29--738.pdf">Katalog producenta — strona 10 PDF ↗</a></p>
+<p><strong>Nie mieszamy wariantów maszyny.</strong> ITA podaje dla klasycznego MS320 pole 3100 × 3200 mm i wysokość 90/120 mm zależnie od opcji. To dane referencyjne z oferty, a nie potwierdzenie konfiguracji konkretnego egzemplarza. <a href="https://ita.pl/wszystkie-maszyny/przemyslowa-pila-panelowa-seriams-saw">ITA — opis i tabela ↗</a></p>
+<p><strong>Nie znaleziono pełnej publicznej instrukcji dokładnie do 3.0.1.9.</strong> Wyszukiwanie obejmowało nazwę instalatora, nazwę EXE, materiały Masterwood/KDT i integracje zewnętrzne. Inne programy o podobnej nazwie i materiały do MasterWork nie są instrukcją PreSize.</p>
+</article>
+<article class="card"><p class="eyebrow">GRANICE USTALEŃ</p><h2>Co udało się odzyskać</h2><table><thead><tr><th>Obszar</th><th>Stan</th></tr></thead><tbody>
+<tr><td>Geometria i połączenia MCUT</td><td>Zweryfikowane w dwóch przykładach.</td></tr>
+<tr><td>Brzegowanie, rzaz i współrzędne</td><td>Potwierdzone rachunkowo dla przykładów; końcowe przejazdy wymagają reguły.</td></tr>
+<tr><td>Szablony etykiet</td><td>Odczytane pola, pozycje, rozmiary, czcionki i przypisania danych.</td></tr>
+<tr><td>Stany pasów i obrotów</td><td>Rozpoznane pola historii; pełne znaczenie wartości niepotwierdzone.</td></tr>
+<tr><td>Kod źródłowy głównego EXE</td><td>Nie odzyskany. Sekcje AKS; brak jawnych metadanych kodu .NET.</td></tr>
+<tr><td>Oryginalny algorytm optymalizacji</td><td>Nie odzyskany. Można opracować własny i porównywać wyniki.</td></tr>
+<tr><td>Dokładna animacja oryginału</td><td>Nie potwierdzona na podstawie obecnego materiału.</td></tr>
+</tbody></table><p class="notice">Ta analiza jest materiałem do niezależnego edytora i symulatora. Nie jest deklaracją wykonania dokładnej kopii PreSize. Nie zmienia licencji ani oryginalnych plików, nie uruchamia komunikacji z piłą.</p>
+<p>Raport danych: <a href="./analiza/glebsza-analiza.json">wyniki odczytu JSON</a>. W wersji 4 planera wdrożono wspólny widok planu i procesu, brzegowania, stałą skalę fragmentów, poprawkę dolnej osi MCUT i dłuższe poszukiwanie własnym optymalizatorem. Geometrię sprawdzono w izolowanych testach; dokładnej kinematyki MS320 nie potwierdzono. <a href="./sprawdzenie-v4.json">Wynik porównania rozkrojów ↗</a></p>
+</article>
+</section>
+<section class="card"><h2>Dalsze wyniki i edytor etykiet</h2><p>Czwarty etap emulacji zatrzymał się na pierwszym wywołaniu GetModuleHandleA; kod symulacji nadal nie został odzyskany. <a href="./analiza/exe-etap4/USTALENIA.txt">Wynik etapu 4</a>.</p><p><a href="../narzedzia/edytor-lbld.html">Edytor plików LBLD</a> odczytuje oryginalne szablony i dane z eksportu MCUT Planera. <a href="../etykiety/IBRON-80x60/IBRON-80x60-Code128.lbld">Nowy szablon IBRON z Code 128</a>. Poprawność struktury NRBF sprawdzono niezależnie; działania etykiet i eksportu w PreSize jeszcze nie potwierdzono.</p></section><section class="card"><h2>Analiza wszystkich DLL i przygotowanie sterowania</h2><p><a href="./analiza/dll-etap5/index.html">Raport: 22 DLL, typy, protokoły i DataStruct</a>. Sterowanie fizyczną maszyną wymaga ustalenia PLC, mapy sygnałów i dokumentacji. Z maszyną nie nawiązano połączenia.</p></section></main><footer>Analiza lokalna · pliki programu zachowane bez zmian · wszystkie nowe pliki uporządkowane w folderach css, js i docs.</footer>
+</body>
+</html>

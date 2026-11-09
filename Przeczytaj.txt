@@ -1,0 +1,13 @@
+SZABLONY IBRON — WERSJA 7
+
+IBRON-80x60-Code128.lbld: edytowalny wzór z kodem.
+IBRON-80x60-bez-kodu.lbld: edytowalny wzór z nazwą zamówienia.
+IBRON-80x60-QR.lbld: dodatkowy wariant QR.
+
+Import: zakładka Naklejki -> Importuj szablon .lbld -> wybierz plik -> Użyj tego szablonu. Zapisz projekt, aby zachować import.
+Pola zmieniają się wg elementu, gdy szablon zawiera powiązania danych. Gotowa etykieta zapisana jako obraz nie zmieni stałych napisów po imporcie.
+
+Przycisk Etykieta .lbld z danymi zapisuje gotowy obraz zgodny z podglądem. Pliki takiego typu oraz porównanie wizualne są w docs/podglady-naklejek.
+
+Nowe pliki są zgodne ze strukturą danych LabelDesign.dll 1.1.4.2 z dostarczonego pakietu. Potwierdzono niezależny odczyt struktury i rekonstrukcję bitmap. Nie potwierdzono jeszcze rzeczywistego druku w docelowym PreSize. Ustaw papier 80 × 60 mm i odpowiednią skalę w programie drukującym.
+Oryginalne pliki LabelExample i DLL zachowano bez zmian.

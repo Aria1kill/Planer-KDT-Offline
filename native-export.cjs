@@ -1,0 +1,19 @@
+/* Native-schema MCUT round trips, geometry and ZIP integrity are checked separately. */
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {JSDOM}=require(path.join(process.env.TEMP,'planer-offline-test-deps/node_modules/jsdom')),{Resvg}=require(path.join(process.env.TEMP,'planer-render-deps/node_modules/@resvg/resvg-js'));
+const app=path.resolve(__dirname,'../..'),dom=new JSDOM('',{runScripts:'outside-only'}),w=dom.window;
+w.TextEncoder=TextEncoder;w.TextDecoder=TextDecoder;w.structuredClone=structuredClone;
+for(const file of ['engine.js','process.js','files.js','label-contract.js','lbld.js','lbld-example.js','lbld-assets.js','lbld-graphics.js','lbld-render.js','label-raster.js','lbld-native-contract.js','lbld-presets.js','label-templates.js','labels.js','mcut-native.js','zip.js','native-pack.js'])w.eval(fs.readFileSync(path.join(app,'js',file),'utf8'));
+w.PlannerLabelRaster.png=async svg=>new Uint8Array(new Resvg(svg,{fitTo:{mode:'width',value:945},font:{loadSystemFonts:true}}).render().asPng());
+const check=(ok,msg)=>assert(ok,msg),near=(a,b)=>assert(Math.abs(a-b)<.003,`${a} != ${b}`);
+(async()=>{
+ let total=0;
+ for(const source of ['przyklady/Przyklad.mcut','przyklady/OVSyp-9-plyt.rozkroj.json']){const original=fs.readFileSync(path.join(app,source),'utf8'),project=source.endsWith('.json')?JSON.parse(original):{...w.PlannerFiles.readMcut(original),name:'1.2_Pila'},result=w.PlannerMcutNative.build(project,project.sheets),xml=new w.DOMParser().parseFromString(result.text,'application/xml'),loaded=w.PlannerFiles.readMcut(result.text);assert.equal(xml.documentElement.attributes.length,0);assert(!xml.querySelector('parsererror,labelData,execution'));
+  for(const panel of xml.documentElement.children){assert(/^panel\d+$/.test(panel.tagName));assert.deepEqual([...panel.attributes].map(a=>a.name).sort(),['l','w','num','material','thickness','saw','mcode'].sort());for(const node of panel.children){assert(/^no\.\d+$/.test(node.tagName));assert.deepEqual([...node.attributes].map(a=>a.name).sort(),['l','w','trim','x','y','layer','id'].sort());for(const part of node.children){assert.equal(part.tagName,'part');assert.deepEqual([...part.attributes].map(a=>a.name).sort(),['cut','id','type','code'].sort());}}}
+  assert.equal(loaded.parts.length,result.metadata.rows.length);if(source.endsWith('.mcut')){assert.equal(loaded.parts.length,22);assert.equal(xml.querySelectorAll('panel1 > *').length,26);}
+  for(const row of result.metadata.rows){const p=result.metadata.panels[row.panel-1],leaf=w.PlannerEngine.leaves(loaded.sheets[row.panel-1].root).find(n=>n.piece?.sourceMcutId===String(row.node));check(leaf,'Every label row references a finished node');const r=row.placement,y=p.flipY?p.sourceWidth-r.y-r.h:r.y,n=p.swapped?{x:y,y:r.x,w:r.h,h:r.w}:{x:r.x,y,w:r.w,h:r.h};near(leaf.x,n.x);near(leaf.y,p.nativeWidth-n.y-n.h);near(leaf.w,n.w);near(leaf.h,n.h);assert.equal(leaf.piece.code,row.values.Code);total++;}
+  const stem=source.endsWith('.json')?'OVSyp-native':'1.2-Pila-native';fs.writeFileSync(path.join(app,'eksport/mcut',stem+'.mcut'),result.text);fs.writeFileSync(path.join(app,'eksport/mcut',stem+'.etykiety.json'),JSON.stringify(result.metadata,null,2));fs.writeFileSync(path.join(app,'eksport/mcut',stem+'.etykiety.csv'),w.PlannerMcutNative.csv(result.metadata));
+ }
+ const project=JSON.parse(fs.readFileSync(path.join(app,'przyklady/OVSyp-9-plyt.rozkroj.json'),'utf8')),pack=await w.PlannerNativePack.build(project,[project.sheets[0]],{fixedLabels:true});fs.writeFileSync(path.join(app,'eksport/mcut/OVSyp-plyta-1-MCUT-naklejki.zip'),pack.bytes);assert(pack.entries>10);
+ console.log(JSON.stringify({nativeSchemaOnly:'PASS',nativeExample26Nodes22Parts:'PASS',finishedPartGeometry:total,barcodeValuesUnchanged:'PASS',ZIPEntries:pack.entries,realRasterLBLD:'PASS'}));w.close();
+})().catch(error=>{console.error(error);w.close();process.exitCode=1;});
